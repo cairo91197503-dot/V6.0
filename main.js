@@ -1,8 +1,7 @@
-// ==================== REINO DAS CINZAS - MAIN.JS ====================
+// ==================== REINO DAS CINZAS - MAIN.JS (COMPLETO) ====================
 const GAME_WIDTH = 480;
 const GAME_HEIGHT = 800;
 
-// Banco de Dados
 const ItemDatabase = {
     'espada_curta': { name: 'Espada Curta', type: 'weapon', damage: 5, rarity: 'comum', value: 25 },
     'espada_longa': { name: 'Espada Longa', type: 'weapon', damage: 8, rarity: 'raro', value: 80 },
@@ -25,7 +24,6 @@ const CraftingRecipes = [
     { result: 'lamina_sombria', materials: ['espada_longa', 'essencia_fogo', 'essencia_gelo'], description: 'Lâmina Sombria' },
 ];
 
-// Estado Global
 const GameState = {
     playerLevel: 1, playerXP: 0, xpToNext: 100, skillPoints: 0,
     playerStats: { strength: 5, defense: 3, agility: 4, mana: 10, luck: 2 },
@@ -88,20 +86,31 @@ function loadGame() {
     return false;
 }
 
-// ==================== BOOT SCENE ====================
+// ==================== BOOT SCENE (CORRIGIDA) ====================
 class BootScene extends Phaser.Scene {
     constructor() { super('BootScene'); }
     preload() {
-    // Mostra na tela o caminho que será usado
-    this.add.text(10, 10, 'Base: ' + window.location.href, { fontSize: '12px', color: '#fff' }).setDepth(999);
+        // Determina a URL base absoluta (ex: https://cairo91197503-dot.github.io/V6.0/)
+        var baseUrl = window.location.href.replace(/\/[^/]*$/, '/');
+        this.load.setBaseURL(baseUrl);
 
-    // Carrega uma imagem de teste
-    this.load.image('test', 'V6.0/assets/tiles/grass.png');
-    this.load.on('loaderror', (file) => {
-        // Se falhar, exibe o erro na tela
-        this.add.text(10, 30, 'Erro: ' + file.url, { fontSize: '12px', color: '#f00' }).setDepth(999);
-    });
-}
+        // Exibe a base na tela para debug (remova depois que funcionar)
+        this.add.text(10, 10, 'Base: ' + baseUrl, { fontSize: '10px', color: '#fff' }).setDepth(999);
+
+        // Carrega assets
+        this.load.spritesheet('kael', 'assets/player/kael_spritesheet.png', { frameWidth: 32, frameHeight: 32 });
+        this.load.image('tile_grass', 'assets/tiles/grass.png');
+        this.load.image('tile_path', 'assets/tiles/path.png');
+        this.load.image('tile_castle', 'assets/tiles/castle_floor.png');
+        this.load.image('heart_full', 'assets/ui/heart_full.png');
+        this.load.image('heart_empty', 'assets/ui/heart_empty.png');
+        this.load.image('coin_icon', 'assets/ui/coin_icon.png');
+
+        // Tratamento de erro visível
+        this.load.on('loaderror', (file) => {
+            this.add.text(10, 30, 'Erro 404: ' + file.url, { fontSize: '10px', color: '#f00' }).setDepth(999);
+        });
+    }
     create() {
         loadGame();
         this.cameras.main.fadeIn(500);
@@ -141,41 +150,17 @@ class GameScene extends Phaser.Scene {
         this.cameras.main.setBackgroundColor('#1a1a2e');
         this.cameras.main.fadeIn(500);
 
-        // Mapa
         this.mapWidth = 2000;
         this.mapHeight = 2000;
         this.physics.world.setBounds(0, 0, this.mapWidth, this.mapHeight);
 
-        // Chão com tiles (usando os assets reais)
         this.createTileMap();
 
-        // Animações do Kael
-        this.anims.create({
-            key: 'walk_down',
-            frames: [ { key: 'kael', frame: 0 } ],
-            frameRate: 1,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'walk_left',
-            frames: [ { key: 'kael', frame: 1 } ],
-            frameRate: 1,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'walk_right',
-            frames: [ { key: 'kael', frame: 2 } ],
-            frameRate: 1,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'walk_up',
-            frames: [ { key: 'kael', frame: 3 } ],
-            frameRate: 1,
-            repeat: -1
-        });
+        this.anims.create({ key: 'walk_down', frames: [ { key: 'kael', frame: 0 } ], frameRate: 1, repeat: -1 });
+        this.anims.create({ key: 'walk_left', frames: [ { key: 'kael', frame: 1 } ], frameRate: 1, repeat: -1 });
+        this.anims.create({ key: 'walk_right', frames: [ { key: 'kael', frame: 2 } ], frameRate: 1, repeat: -1 });
+        this.anims.create({ key: 'walk_up', frames: [ { key: 'kael', frame: 3 } ], frameRate: 1, repeat: -1 });
 
-        // Jogador
         this.player = this.physics.add.sprite(400, 500, 'kael');
         this.player.setCollideWorldBounds(true).setSize(20, 28).setDepth(10);
         this.player.hp = GameState.playerHP;
@@ -184,7 +169,6 @@ class GameScene extends Phaser.Scene {
         this.player.alive = true;
         this.player.direction = 'down';
 
-        // HUD
         this.hearts = [];
         for (let i = 0; i < this.player.maxHp; i++) {
             const heart = this.add.image(20 + i * 20, 20, 'heart_full').setScrollFactor(0).setDepth(100);
@@ -195,7 +179,6 @@ class GameScene extends Phaser.Scene {
             fontSize: '14px', color: '#ffcc00', stroke: '#000', strokeThickness: 3
         }).setScrollFactor(0).setDepth(100);
 
-        // Controles mobile
         this.joystickActive = false;
         this.mobileDirection = { x: 0, y: 0 };
         this.moveSpeed = 2.2;
@@ -223,7 +206,6 @@ class GameScene extends Phaser.Scene {
             this.mobileDirection = { x: 0, y: 0 };
         });
 
-        // Botões
         const btnStyle = { fontSize: '28px', backgroundColor: 'rgba(0,0,0,0.5)', padding: { x: 10, y: 6 } };
         this.atkBtn = this.add.text(width - 70, height - 180, '⚔️', btnStyle).setOrigin(0.5).setScrollFactor(0).setDepth(200).setInteractive();
         this.atkBtn.on('pointerdown', () => this.playerAttack());
