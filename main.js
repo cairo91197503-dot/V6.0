@@ -92,19 +92,21 @@ function loadGame() {
 class BootScene extends Phaser.Scene {
     constructor() { super('BootScene'); }
   preload() {
-    // Detecta automaticamente a base do diretório (ex: /V6.0/)
+    // Obtém a base correta (ex: '/V6.0/')
     var base = window.location.pathname;
     base = base.substring(0, base.lastIndexOf('/') + 1);
-    this.load.path = base;
 
-    // Carregar assets reais
-    this.load.spritesheet('kael', 'assets/player/kael_spritesheet.png', { frameWidth: 32, frameHeight: 32 });
-    this.load.image('tile_grass', 'assets/tiles/grass.png');
-    this.load.image('tile_path', 'assets/tiles/path.png');
-    this.load.image('tile_castle', 'assets/tiles/castle_floor.png');
-    this.load.image('heart_full', 'assets/ui/heart_full.png');
-    this.load.image('heart_empty', 'assets/ui/heart_empty.png');
-    this.load.image('coin_icon', 'assets/ui/coin_icon.png');
+    // Monta URL completa para cada asset (evita erros de caminho)
+    var fullPath = window.location.origin + base;
+
+    // Carregar assets reais usando URLs absolutas
+    this.load.spritesheet('kael', fullPath + 'assets/player/kael_spritesheet.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.image('tile_grass', fullPath + 'assets/tiles/grass.png');
+    this.load.image('tile_path', fullPath + 'assets/tiles/path.png');
+    this.load.image('tile_castle', fullPath + 'assets/tiles/castle_floor.png');
+    this.load.image('heart_full', fullPath + 'assets/ui/heart_full.png');
+    this.load.image('heart_empty', fullPath + 'assets/ui/heart_empty.png');
+    this.load.image('coin_icon', fullPath + 'assets/ui/coin_icon.png');
 }
     create() {
         loadGame();
