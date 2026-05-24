@@ -91,10 +91,12 @@ function loadGame() {
 // ==================== BOOT SCENE ====================
 class BootScene extends Phaser.Scene {
     constructor() { super('BootScene'); }
-   preload() {
-    // Define o caminho base para os assets (subdiretório do Pages)
-    this.load.path = 'V6.0/';
-    
+  preload() {
+    // Detecta automaticamente a base do diretório (ex: /V6.0/)
+    var base = window.location.pathname;
+    base = base.substring(0, base.lastIndexOf('/') + 1);
+    this.load.path = base;
+
     // Carregar assets reais
     this.load.spritesheet('kael', 'assets/player/kael_spritesheet.png', { frameWidth: 32, frameHeight: 32 });
     this.load.image('tile_grass', 'assets/tiles/grass.png');
