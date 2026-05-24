@@ -91,23 +91,19 @@ function loadGame() {
 // ==================== BOOT SCENE ====================
 class BootScene extends Phaser.Scene {
     constructor() { super('BootScene'); }
-  preload() {
-    // Obtém a base correta (ex: '/V6.0/')
-    var base = window.location.pathname;
-    base = base.substring(0, base.lastIndexOf('/') + 1);
-
-    // Monta URL completa para cada asset (evita erros de caminho)
-    var fullPath = window.location.origin + base;
-
-    // Carregar assets reais usando URLs absolutas
-    this.load.spritesheet('kael', fullPath + 'assets/player/kael_spritesheet.png', { frameWidth: 32, frameHeight: 32 });
-    this.load.image('tile_grass', fullPath + 'assets/tiles/grass.png');
-    this.load.image('tile_path', fullPath + 'assets/tiles/path.png');
-    this.load.image('tile_castle', fullPath + 'assets/tiles/castle_floor.png');
-    this.load.image('heart_full', fullPath + 'assets/ui/heart_full.png');
-    this.load.image('heart_empty', fullPath + 'assets/ui/heart_empty.png');
-    this.load.image('coin_icon', fullPath + 'assets/ui/coin_icon.png');
-}
+    preload() {
+        // Caminho base absoluto para o GitHub Pages (ajuste se o repositório mudar de nome)
+        var basePath = '/V6.0/';
+        
+        // Carregar assets reais com caminho absoluto
+        this.load.spritesheet('kael', basePath + 'assets/player/kael_spritesheet.png', { frameWidth: 32, frameHeight: 32 });
+        this.load.image('tile_grass', basePath + 'assets/tiles/grass.png');
+        this.load.image('tile_path', basePath + 'assets/tiles/path.png');
+        this.load.image('tile_castle', basePath + 'assets/tiles/castle_floor.png');
+        this.load.image('heart_full', basePath + 'assets/ui/heart_full.png');
+        this.load.image('heart_empty', basePath + 'assets/ui/heart_empty.png');
+        this.load.image('coin_icon', basePath + 'assets/ui/coin_icon.png');
+    }
     create() {
         loadGame();
         this.cameras.main.fadeIn(500);
@@ -240,15 +236,12 @@ class GameScene extends Phaser.Scene {
 
     createTileMap() {
         const tileSize = 32;
-        // Simples grid de grama com um caminho central
         for (let row = 0; row < 70; row++) {
             for (let col = 0; col < 70; col++) {
                 const x = col * tileSize;
                 const y = row * tileSize;
                 let tile = 'tile_grass';
-                // Caminho vertical no centro
                 if (col > 30 && col < 38) tile = 'tile_path';
-                // Castelo no topo
                 if (col > 25 && col < 45 && row > 5 && row < 15) tile = 'tile_castle';
                 this.add.image(x + tileSize/2, y + tileSize/2, tile).setDepth(0);
             }
