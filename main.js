@@ -92,18 +92,16 @@ function loadGame() {
 class BootScene extends Phaser.Scene {
     constructor() { super('BootScene'); }
     preload() {
-        // Caminho base absoluto para o GitHub Pages (ajuste se o repositório mudar de nome)
-        var basePath = '/V6.0/';
-        
-        // Carregar assets reais com caminho absoluto
-        this.load.spritesheet('kael', basePath + 'assets/player/kael_spritesheet.png', { frameWidth: 32, frameHeight: 32 });
-        this.load.image('tile_grass', basePath + 'assets/tiles/grass.png');
-        this.load.image('tile_path', basePath + 'assets/tiles/path.png');
-        this.load.image('tile_castle', basePath + 'assets/tiles/castle_floor.png');
-        this.load.image('heart_full', basePath + 'assets/ui/heart_full.png');
-        this.load.image('heart_empty', basePath + 'assets/ui/heart_empty.png');
-        this.load.image('coin_icon', basePath + 'assets/ui/coin_icon.png');
-    }
+    // Mostra na tela o caminho que será usado
+    this.add.text(10, 10, 'Base: ' + window.location.href, { fontSize: '12px', color: '#fff' }).setDepth(999);
+
+    // Carrega uma imagem de teste
+    this.load.image('test', 'V6.0/assets/tiles/grass.png');
+    this.load.on('loaderror', (file) => {
+        // Se falhar, exibe o erro na tela
+        this.add.text(10, 30, 'Erro: ' + file.url, { fontSize: '12px', color: '#f00' }).setDepth(999);
+    });
+}
     create() {
         loadGame();
         this.cameras.main.fadeIn(500);
