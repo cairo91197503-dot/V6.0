@@ -91,16 +91,19 @@ function loadGame() {
 // ==================== BOOT SCENE ====================
 class BootScene extends Phaser.Scene {
     constructor() { super('BootScene'); }
-    preload() {
-        // Carregar assets reais
-        this.load.spritesheet('kael', 'assets/player/kael_spritesheet.png', { frameWidth: 32, frameHeight: 32 });
-        this.load.image('tile_grass', 'assets/tiles/grass.png');
-        this.load.image('tile_path', 'assets/tiles/path.png');
-        this.load.image('tile_castle', 'assets/tiles/castle_floor.png');
-        this.load.image('heart_full', 'assets/ui/heart_full.png');
-        this.load.image('heart_empty', 'assets/ui/heart_empty.png');
-        this.load.image('coin_icon', 'assets/ui/coin_icon.png');
-    }
+   preload() {
+    // Define o caminho base para os assets (subdiretório do Pages)
+    this.load.path = 'V6.0/';
+    
+    // Carregar assets reais
+    this.load.spritesheet('kael', 'assets/player/kael_spritesheet.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.image('tile_grass', 'assets/tiles/grass.png');
+    this.load.image('tile_path', 'assets/tiles/path.png');
+    this.load.image('tile_castle', 'assets/tiles/castle_floor.png');
+    this.load.image('heart_full', 'assets/ui/heart_full.png');
+    this.load.image('heart_empty', 'assets/ui/heart_empty.png');
+    this.load.image('coin_icon', 'assets/ui/coin_icon.png');
+}
     create() {
         loadGame();
         this.cameras.main.fadeIn(500);
